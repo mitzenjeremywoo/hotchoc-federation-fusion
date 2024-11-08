@@ -1,0 +1,9 @@
+accounts/bin/
+accounts/obj/
+gateway/bin/
+gateway/obj/
+products/bin/
+products/obj/
+reviews/bin/
+reviews/obj/
+.vs/

@@ -1,0 +1,38 @@
+schema {
+  query: Query
+}
+
+type Query {
+  "Fetches an object given its ID."
+  node("ID of the object." id: ID!): Node
+  "Lookup nodes by a list of IDs."
+  nodes("The list of node IDs." ids: [ID!]!): [Node]!
+  productById(id: ID!): Product!
+  productsById(ids: [ID!]!): [Product!]!
+  topProducts(first: Int!): [Product!]!
+  userById(id: ID!): User
+  users: [User!]!
+  usersById(ids: [ID!]!): [User!]!
+  demo: [User!]!
+}
+
+type Product implements Node {
+  id: ID!
+  name: String!
+  price: Int!
+  weight: Int!
+}
+
+type User implements Node {
+  birthdate: DateTime!
+  id: ID!
+  name: String!
+  username: String!
+}
+
+interface Node {
+  id: ID!
+}
+
+"The `DateTime` scalar represents an ISO-8601 compliant date time type."
+scalar DateTime

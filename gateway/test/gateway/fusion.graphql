@@ -1,0 +1,38 @@
+schema @fusion(version: 1) @httpClient(subgraph: "accounts", baseAddress: "http:\/\/localhost:50901\/graphql") @httpClient(subgraph: "products", baseAddress: "http:\/\/localhost:50903\/graphql") @node(subgraph: "accounts", types: [ "User" ]) @node(subgraph: "products", types: [ "Product" ]) {
+  query: Query
+}
+
+type Query {
+  "Fetches an object given its ID."
+  node("ID of the object." id: ID!): Node @variable(subgraph: "accounts", name: "id", argument: "id") @resolver(subgraph: "accounts", select: "{ node(id: $id) }", arguments: [ { name: "id", type: "ID!" } ]) @variable(subgraph: "products", name: "id", argument: "id") @resolver(subgraph: "products", select: "{ node(id: $id) }", arguments: [ { name: "id", type: "ID!" } ])
+  "Lookup nodes by a list of IDs."
+  nodes("The list of node IDs." ids: [ID!]!): [Node]! @variable(subgraph: "accounts", name: "ids", argument: "ids") @resolver(subgraph: "accounts", select: "{ nodes(ids: $ids) }", arguments: [ { name: "ids", type: "[ID!]!" } ]) @variable(subgraph: "products", name: "ids", argument: "ids") @resolver(subgraph: "products", select: "{ nodes(ids: $ids) }", arguments: [ { name: "ids", type: "[ID!]!" } ])
+  productById(id: ID!): Product! @variable(subgraph: "products", name: "id", argument: "id") @resolver(subgraph: "products", select: "{ productById(id: $id) }", arguments: [ { name: "id", type: "ID!" } ])
+  productsById(ids: [ID!]!): [Product!]! @variable(subgraph: "products", name: "ids", argument: "ids") @resolver(subgraph: "products", select: "{ productsById(ids: $ids) }", arguments: [ { name: "ids", type: "[ID!]!" } ])
+  topProducts(first: Int!): [Product!]! @variable(subgraph: "products", name: "first", argument: "first") @resolver(subgraph: "products", select: "{ topProducts(first: $first) }", arguments: [ { name: "first", type: "Int!" } ])
+  userById(id: ID!): User @variable(subgraph: "accounts", name: "id", argument: "id") @resolver(subgraph: "accounts", select: "{ userById(id: $id) }", arguments: [ { name: "id", type: "ID!" } ])
+  users: [User!]! @resolver(subgraph: "accounts", select: "{ users }")
+  demo: [User!]! @resolver(subgraph: "accounts", select: "{ users }")
+  usersById(ids: [ID!]!): [User!]! @variable(subgraph: "accounts", name: "ids", argument: "ids") @resolver(subgraph: "accounts", select: "{ usersById(ids: $ids) }", arguments: [ { name: "ids", type: "[ID!]!" } ])
+}
+
+type Product implements Node @variable(subgraph: "products", name: "Product_id", select: "id") @resolver(subgraph: "products", select: "{ productById(id: $Product_id) }", arguments: [ { name: "Product_id", type: "ID!" } ]) @resolver(subgraph: "products", select: "{ productsById(ids: $Product_id) }", arguments: [ { name: "Product_id", type: "[ID!]!" } ], kind: "BATCH_BY_KEY") {
+  id: ID! @source(subgraph: "products")
+  name: String! @source(subgraph: "products")
+  price: Int! @source(subgraph: "products")
+  weight: Int! @source(subgraph: "products")
+}
+
+type User implements Node @variable(subgraph: "accounts", name: "User_id", select: "id") @resolver(subgraph: "accounts", select: "{ userById(id: $User_id) }", arguments: [ { name: "User_id", type: "ID!" } ]) @resolver(subgraph: "accounts", select: "{ usersById(ids: $User_id) }", arguments: [ { name: "User_id", type: "[ID!]!" } ], kind: "BATCH_BY_KEY") {
+  birthdate: DateTime! @source(subgraph: "accounts")
+  id: ID! @source(subgraph: "accounts")
+  name: String! @source(subgraph: "accounts")
+  username: String! @source(subgraph: "accounts")
+}
+
+interface Node {
+  id: ID!
+}
+
+"The `DateTime` scalar represents an ISO-8601 compliant date time type."
+scalar DateTime
